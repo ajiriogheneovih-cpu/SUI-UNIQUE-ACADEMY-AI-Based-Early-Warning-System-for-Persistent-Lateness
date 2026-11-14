@@ -3,7 +3,7 @@ import pandas as pd
 from pathlib import Path
 from datetime import date
 import hmac
-
+st.set_page_config(page_title="Sui-Unique Academy", page_icon="🎓", layout="wide")
 def check_password():
     """Require a password before displaying the dashboard."""
 
@@ -30,7 +30,7 @@ def check_password():
 
     return False
 
-st.set_page_config(page_title="Sui-Unique Academy", page_icon="🎓", layout="wide")
+
 if not check_password():
     st.stop()
 DATA_DIR = Path("data/real_school_data")
