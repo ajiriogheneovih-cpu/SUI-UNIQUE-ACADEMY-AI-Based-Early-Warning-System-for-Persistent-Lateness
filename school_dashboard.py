@@ -33,15 +33,23 @@ def check_password():
 
 if not check_password():
     st.stop()
+from io import StringIO
+
 DATA_DIR = Path("data/real_school_data")
 
 @st.cache_data
 def load_attendance():
-    return pd.read_csv(DATA_DIR / "processed_school_attendance.csv")
+    local_file = DATA_DIR / "processed_school_attendance.csv"
+    if local_file.exists():
+        return pd.read_csv(local_file)
+    return pd.read_csv(StringIO(st.secrets["ATTENDANCE_CSV"]))
 
 @st.cache_data
 def load_risk():
-    return pd.read_csv(DATA_DIR / "school_ai_risk_scores_with_status.csv")
+    local_file = DATA_DIR / "school_ai_risk_scores_with_status.csv"
+    if local_file.exists():
+        return pd.read_csv(local_file)
+    return pd.read_csv(StringIO(st.secrets["RISK_CSV"]))
 
 df = load_attendance()
 
