@@ -34,22 +34,33 @@ def check_password():
 if not check_password():
     st.stop()
 from io import StringIO
-
+import gzip
+import base64
 DATA_DIR = Path("data/real_school_data")
-
 @st.cache_data
 def load_attendance():
     local_file = DATA_DIR / "processed_school_attendance.csv"
+
     if local_file.exists():
         return pd.read_csv(local_file)
-    return pd.read_csv(StringIO(st.secrets["ATTENDANCE_CSV"]))
+
+    compressed_data = base64.b64decode(st.secrets["ATTENDANCE_CSV"])
+    csv_data = gzip.decompress(compressed_data).decode("utf-8-sig")
+
+    return pd.read_csv(StringIO(csv_data))
 
 @st.cache_data
 def load_risk():
     local_file = DATA_DIR / "school_ai_risk_scores_with_status.csv"
+
     if local_file.exists():
         return pd.read_csv(local_file)
-    return pd.read_csv(StringIO(st.secrets["RISK_CSV"]))
+
+    compressed_data = base64.b64decode(st.secrets["RISK_CSV"])
+    csv_data = gzip.decompress(compressed_data).decode("utf-8-sig")
+
+    return pd.read_csv(StringIO(csv_data))
+
 
 df = load_attendance()
 

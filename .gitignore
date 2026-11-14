@@ -10,3 +10,7 @@ data/
 school_dashboard_backup.py
 
 school_dashboard_before_cloud_data.py
+
+attendance_secret.txt
+
+risk_secret.txt
