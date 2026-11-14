@@ -133,9 +133,7 @@ elif selected_page == "Early Warnings":
     st.write("Review recorded lateness patterns and data completeness.")
 
     # Load early warning records
-    risk_df = pd.read_csv(
-           "data/real_school_data/school_ai_risk_scores_with_status.csv"
-    )
+    risk_df = load_risk()
 
     
     # Select the latest available review week for each student
