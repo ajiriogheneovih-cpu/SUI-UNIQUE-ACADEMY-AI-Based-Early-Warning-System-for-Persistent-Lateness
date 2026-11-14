@@ -2,9 +2,37 @@ import streamlit as st
 import pandas as pd
 from pathlib import Path
 from datetime import date
+import hmac
+
+def check_password():
+    """Require a password before displaying the dashboard."""
+
+    if st.session_state.get("authenticated", False):
+        return True
+
+    st.title("Sui-Unique Academy")
+    st.subheader("Supervisor Review — Secure Access")
+
+    password = st.text_input(
+        "Enter your access password",
+        type="password"
+    )
+
+    if st.button("Sign In"):
+        if hmac.compare_digest(
+            password,
+            st.secrets["APP_PASSWORD"]
+        ):
+            st.session_state["authenticated"] = True
+            st.rerun()
+        else:
+            st.error("Incorrect password. Please try again.")
+
+    return False
 
 st.set_page_config(page_title="Sui-Unique Academy", page_icon="🎓", layout="wide")
-
+if not check_password():
+    st.stop()
 DATA_DIR = Path("data/real_school_data")
 
 @st.cache_data
