@@ -479,7 +479,80 @@ elif selected_page == "Early Warnings":
         "Further Review is not a validated AI prediction."
     )
 
+    # ==========================================
+    # PRIVATE PARENT WHATSAPP NOTIFICATION
+    # TEST MODE — NO REAL PARENT CONTACTS
+    # ==========================================
 
+    import urllib.parse
+
+    st.divider()
+    st.subheader("📱 Private Parent WhatsApp Notification")
+
+    st.info(
+        "TEST MODE: Use only a WhatsApp number you own "
+        "or have permission to test. Do not enter real "
+        "parent contact details."
+    )
+
+    whatsapp_student = st.selectbox(
+        "Select Student for Parent Notification",
+        sorted(df["Student_ID"].dropna().astype(str).unique()),
+        key="whatsapp_student_select"
+    )
+
+    st.write("Selected Student:", whatsapp_student)
+
+    test_phone = st.text_input(
+        "Test WhatsApp Number",
+        placeholder="08012345678",
+        key="parent_whatsapp_test"
+    )
+
+    whatsapp_message = (
+        "Good morning, Parent/Guardian.\n\n"
+        "We would like to discuss your child's recent "
+        "punctuality at school and understand whether "
+        "there are any challenges we can help address.\n\n"
+        "Kindly contact the class teacher at your convenience "
+        "so we can work together to support your child.\n\n"
+        "Thank you.\n"
+        "Sui-Unique Academy"
+    )
+
+    edited_message = st.text_area(
+        "Write or Edit Private WhatsApp Message",
+        value=whatsapp_message,
+        height=200,
+        key="editable_parent_message"
+    )
+
+    if st.button("Prepare Private WhatsApp Message"):
+        phone = "".join(c for c in test_phone if c.isdigit())
+
+        if phone.startswith("0") and len(phone) == 11:
+            phone = "234" + phone[1:]
+
+        if not phone.startswith("234") or len(phone) != 13:
+            st.error("Please enter a valid Nigerian WhatsApp number.")
+        else:
+            encoded_message = urllib.parse.quote(edited_message)
+
+            whatsapp_link = (
+                f"https://wa.me/{phone}?text={encoded_message}"
+            )
+
+            st.success("Private WhatsApp message prepared.")
+
+            st.link_button(
+                "📲 Open Private WhatsApp Chat",
+                whatsapp_link
+            )
+
+            st.warning(
+                "WhatsApp will open with the prepared message. "
+                "It will NOT be sent automatically."
+            )
 elif selected_page == "Student Follow-Ups":
     st.header("📝 Student Support Follow-Up")
     st.write("Record supportive actions to help students improve punctuality.")
