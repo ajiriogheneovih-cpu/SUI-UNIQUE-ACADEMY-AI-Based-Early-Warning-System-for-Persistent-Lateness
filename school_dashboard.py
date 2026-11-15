@@ -91,6 +91,113 @@ if selected_page == "Overview":
 
 elif selected_page == "Student Attendance":
     st.header("Student Attendance")
+
+        # ==========================================
+    # DAILY ATTENDANCE ENTRY — TEST MODE
+    # ==========================================
+
+    from datetime import datetime, time
+
+    st.divider()
+    st.subheader("📝 Daily Student Attendance Entry")
+
+    st.info(
+        "TEST MODE: This form uses fictional student IDs. "
+        "No attendance records will be saved yet."
+    )
+
+    current_year = date.today().year
+
+    with st.form("daily_attendance_form"):
+
+        academic_year = st.selectbox(
+            "Academic Year",
+            [
+                f"{current_year-1}/{current_year}",
+                f"{current_year}/{current_year+1}",
+                f"{current_year+1}/{current_year+2}"
+            ],
+            index=1
+        )
+
+        entry_term = st.selectbox(
+            "Term",
+            ["First Term", "Second Term", "Third Term"]
+        )
+
+        entry_date = st.date_input(
+            "Attendance Date",
+            value=date.today()
+        )
+
+        entry_student = st.text_input(
+            "Student ID",
+            placeholder="Example: DEMO_001"
+        )
+
+        entry_class = st.selectbox(
+            "Class",
+            ["JSS1", "JSS2", "JSS3", "SS1", "SS2", "SS3"]
+        )
+
+        entry_status = st.selectbox(
+            "Attendance Status",
+            ["Present", "Late", "Absent"]
+        )
+
+        entry_arrival = st.time_input(
+            "Arrival Time",
+            value=time(7, 30)
+        )
+
+        submitted_attendance = st.form_submit_button(
+            "Check Attendance Entry"
+        )
+
+    if submitted_attendance:
+
+        if not entry_student.strip():
+            st.error("Please enter a fictional Student ID.")
+
+        elif not entry_student.strip().upper().startswith("DEMO_"):
+            st.error(
+                "TEST MODE: Student ID must begin with DEMO_."
+            )
+
+        else:
+            cutoff = time(7, 30)
+
+            if entry_status == "Absent":
+                minutes_late = 0
+                calculated_status = "Absent"
+
+            elif entry_arrival > cutoff:
+                minutes_late = (
+                    datetime.combine(entry_date, entry_arrival)
+                    - datetime.combine(entry_date, cutoff)
+                ).seconds // 60
+                calculated_status = "Late"
+
+            else:
+                minutes_late = 0
+                calculated_status = "Present"
+
+            st.success("Attendance entry validated successfully.")
+
+            st.write("**Academic Year:**", academic_year)
+            st.write("**Term:**", entry_term)
+            st.write("**Date:**", entry_date)
+            st.write("**Student ID:**", entry_student)
+            st.write("**Class:**", entry_class)
+            st.write("**Attendance Status:**", calculated_status)
+            st.write("**Minutes Late:**", minutes_late)
+
+            st.warning(
+                "TEST MODE: This entry has NOT been saved "
+                "to the school attendance records."
+            )
+
+    st.divider()
     term = st.selectbox("Select Term", ["All Terms"] + sorted(df["Term"].dropna().unique().tolist()))
     filtered = df if term == "All Terms" else df[df["Term"] == term]
     chosen_class = st.selectbox("Select Class", ["All Classes"] + sorted(filtered["Class"].dropna().unique().tolist()))
@@ -122,7 +229,11 @@ elif selected_page == "Student Attendance":
     st.divider()
     st.subheader("📋 Student Attendance Lookup")
     lookup_class = st.selectbox("1. Select Class", sorted(df["Class"].dropna().unique()), key="lookup_class")
-    lookup_term = st.selectbox("2. Select Term", ["First Term", "Second Term", "Third Term"], key="lookup_term")
+    lookup_term = st.selectbox(
+    "2. Select Term",
+    sorted(df["Term"].dropna().unique().tolist()),
+    key="lookup_term"
+)
     matching = df[(df["Class"] == lookup_class) & (df["Term"] == lookup_term)]
     ids = sorted(matching["Student_ID"].dropna().unique())
     if not ids:
