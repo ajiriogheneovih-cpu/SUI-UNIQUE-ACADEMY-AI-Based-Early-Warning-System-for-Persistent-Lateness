@@ -1169,11 +1169,7 @@ elif selected_page == "Early Warnings":
         "📱 Private Parent WhatsApp Notification"
     )
 
-    st.info(
-        "TEST MODE: Use only a WhatsApp number you own "
-        "or have permission to test. Do not enter real "
-        "parent contact details."
-    )
+
 
     whatsapp_student = st.selectbox(
         "Select Student for Parent Notification",
